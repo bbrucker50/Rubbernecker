@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Road Trip Rubbernecker</title>
+<meta name="theme-color" content="#16120e">
+<meta name="description" content="Alerts you to historical markers within 100 meters and reads you a one-minute synopsis.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{--bg:#16120e;--panel:#221c16;--panel2:#2c241b;--ink:#f4ead8;--dim:#b3a58d;--accent:#e8a33d;--accent-ink:#1a1206;--ok:#7bc47f;--bad:#e5705c;--line:#3a3025;--r:14px}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 6px}
+h1{font:700 1.15rem/1.2 Georgia,"Times New Roman",serif;margin:0;letter-spacing:.2px}
+h1 small{display:block;font:500 .72rem system-ui,sans-serif;color:var(--dim);letter-spacing:.04em;text-transform:uppercase}
+h2{font:600 .8rem system-ui;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin:22px 0 8px}
+main{max-width:640px;margin:0 auto;padding:0 16px 40px}
+.pill{font-size:.78rem;padding:4px 10px;border-radius:999px;background:var(--panel2);color:var(--dim);white-space:nowrap}
+.pill.ok{color:var(--ok)}.pill.bad{color:var(--bad)}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:10px 14px;min-height:44px}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+button.big{width:100%;font-size:1.1rem;padding:16px;border-radius:var(--r)}
+button.stop{background:#5a2a22;border-color:#7a382d}
+button:disabled{opacity:.5;cursor:default}
+.status{margin:10px 2px 0;color:var(--dim);font-size:.9rem;min-height:1.4em}
+.warn{background:#3b2a12;border:1px solid #6b4a16;color:#f3d49a;border-radius:10px;padding:10px 12px;margin:10px 0;font-size:.9rem}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:16px}
+.card[hidden]{display:none}
+.card .kicker{color:var(--accent);font:600 .75rem system-ui;text-transform:uppercase;letter-spacing:.08em}
+.card h3{font:700 1.45rem/1.25 Georgia,serif;margin:4px 0 4px}
+.meta{color:var(--dim);font-size:.88rem;margin-bottom:10px}
+.thumb{float:right;width:96px;height:96px;object-fit:cover;border-radius:10px;margin:0 0 8px 12px;background:var(--panel2)}
+.syn{font-size:1.08rem;line-height:1.6;margin:10px 0;min-height:3em}
+.syn.loading{color:var(--dim);font-style:italic}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.row a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:10px;color:var(--ink);text-decoration:none;background:var(--panel2)}
+details.ins{margin-top:10px;color:var(--dim);font-size:.9rem}
+details.ins p{margin:6px 0 0;color:var(--ink)}
+ul.list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+ul.list li button{width:100%;text-align:left;display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+ul.list .nm{font-weight:600}.ul-sub{color:var(--dim);font-size:.82rem}
+.d{color:var(--accent);white-space:nowrap;font-variant-numeric:tabular-nums}
+.empty{color:var(--dim);font-size:.9rem;padding:4px 2px}
+details.settings{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:4px 14px;margin-top:22px}
+details.settings summary{cursor:pointer;padding:12px 0;font-weight:600}
+.f{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.f label{color:var(--ink)}.f .hint{grid-column:1/-1;color:var(--dim);font-size:.8rem;margin-top:-4px}
+.f input[type=range]{width:160px}.f input[type=text],.f input[type=password],.f select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;min-height:40px;max-width:210px}
+.f input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}.presets button{min-height:36px;padding:6px 10px;font-size:.82rem}
+footer{max-width:640px;margin:0 auto;padding:8px 16px 32px;color:var(--dim);font-size:.78rem}
+footer a{color:var(--dim)}
+.sr{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Road Trip Rubbernecker<small>Historical markers, read to you</small></h1>
+  <span id="gps" class="pill">GPS off</span>
+</header>
+
+<main>
+  <div id="secure" class="warn" hidden>Location, notifications and offline install need HTTPS. Open this app from its https:// address (or localhost).</div>
+
+  <button id="startBtn" class="primary big">Start exploring</button>
+  <div id="status" class="status" role="status"></div>
+  <div id="error" class="warn" hidden></div>
+
+  <section id="card" class="card" aria-live="polite" hidden>
+    <div class="kicker" id="kicker">Historical marker nearby</div>
+    <img id="thumb" class="thumb" alt="" hidden>
+    <h3 id="title"></h3>
+    <div class="meta" id="meta"></div>
+    <p id="syn" class="syn"></p>
+    <details id="insBox" class="ins" hidden><summary>Marker text</summary><p id="ins"></p></details>
+    <div class="row">
+      <button id="speakBtn" class="primary">▶ Read aloud</button>
+      <button id="skipBtn">Next ▸</button>
+      <a id="wikiLink" target="_blank" rel="noopener" hidden>Wikipedia</a>
+      <a id="osmLink" target="_blank" rel="noopener" hidden>Map</a>
+    </div>
+    <div class="meta" id="queueNote" style="margin-top:10px"></div>
+  </section>
+
+  <h2>Within half a mile</h2>
+  <ul id="nearby" class="list"><li class="empty">Start exploring to see markers around you.</li></ul>
+
+  <h2>Visited</h2>
+  <ul id="history" class="list"><li class="empty">Nothing yet.</li></ul>
+
+  <details class="settings" id="settings">
+    <summary>Settings &amp; test mode</summary>
+    <div class="f"><label for="radius">Alert distance: <b id="radiusOut">100</b> m</label><input id="radius" type="range" min="50" max="300" step="10"></div>
+    <div class="f"><label for="autoSpeak">Read aloud automatically</label><input id="autoSpeak" type="checkbox"></div>
+    <div class="f"><label for="notify">Phone notifications</label><input id="notify" type="checkbox"></div>
+    <div class="f"><label for="wake">Keep screen awake</label><input id="wake" type="checkbox"></div>
+    <div class="f"><label for="voice">Voice</label><select id="voice"></select></div>
+    <div class="f"><label for="rate">Speed: <b id="rateOut">1.0</b>×</label><input id="rate" type="range" min="0.7" max="1.4" step="0.05"></div>
+    <div class="f"><label for="maxWords">Synopsis length</label>
+      <select id="maxWords"><option value="100">Short (~40 s)</option><option value="150">One minute</option><option value="200">Long (~80 s)</option></select></div>
+    <div class="f"><label for="units">Units</label><select id="units"><option value="imperial">Feet / miles</option><option value="metric">Meters / km</option></select></div>
+    <div class="f"><label for="repeatHours">Don’t repeat a marker for</label>
+      <select id="repeatHours"><option value="1">1 hour</option><option value="6">6 hours</option><option value="24">1 day</option><option value="168">1 week</option></select></div>
+    <div class="f"><label for="includeAllWiki">Include every Wikipedia place</label><input id="includeAllWiki" type="checkbox"><span class="hint">Off: only places that look historic. On: restaurants, schools, etc. too.</span></div>
+    <div class="f"><label for="apiKey">Claude API key (optional)</label><input id="apiKey" type="password" autocomplete="off" placeholder="sk-ant-…"><span class="hint">Adds a smoother, rewritten synopsis. The key stays in this browser only and is sent only to api.anthropic.com. Leave blank to use the built-in summarizer.</span></div>
+    <div class="f" style="display:block">
+      <label for="simInput">Test location (lat, lon)</label>
+      <div style="display:flex;gap:8px;margin-top:6px"><input id="simInput" type="text" placeholder="38.8893, -77.0502" style="flex:1;max-width:none"><button id="simGo">Go</button></div>
+      <div class="presets" id="presets"></div>
+      <button id="simStop" hidden>Stop test mode — use real GPS</button>
+    </div>
+    <div class="f" style="display:block"><button id="clearHist">Clear visited list</button></div>
+  </details>
+</main>
+
+<footer>
+  Marker data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL).
+  Summaries adapted from <a href="https://www.wikipedia.org/" target="_blank" rel="noopener">Wikipedia</a> (CC BY-SA 4.0).
+  Not every marker is in these sources; for the most complete U.S. marker listing also see <a href="https://www.hmdb.org/" target="_blank" rel="noopener">HMdb.org</a>.
+  Passengers read; drivers drive.
+</footer>
+
+<script src="core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
