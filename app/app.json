@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "Road Trip Rubbernecker",
+    "slug": "road-trip-rubbernecker",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#16120e",
+    "android": {
+      "package": "com.bbrucker.rubbernecker",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#16120e",
+        "foregroundImage": "./assets/android-icon-foreground.png"
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
+        "POST_NOTIFICATIONS",
+        "WAKE_LOCK",
+        "VIBRATE"
+      ],
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true,
+          "locationAlwaysAndWhenInUsePermission": "Rubbernecker uses your location to tell you about historical markers you pass, even with the screen off.",
+          "locationWhenInUsePermission": "Rubbernecker uses your location to tell you about nearby historical markers."
+        }
+      ],
+      [
+        "expo-notifications",
+        { "color": "#e8a33d" }
+      ],
+      "expo-secure-store"
+    ]
+  }
+}

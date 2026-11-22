@@ -18,6 +18,10 @@ It needs HTTPS (location, notifications and install are blocked on plain http), 
 Use **Settings → Test location** (presets for the Lincoln Memorial, Independence Hall, the Alamo, Fort McHenry)
 to try it without moving.
 
+## Android app
+A native Android version with background (screen-off) tracking lives in [`app/`](app/). Every push builds an APK and publishes it at
+https://github.com/bbrucker50/Rubbernecker/releases/tag/latest — see [`app/README.md`](app/README.md).
+
 ## Data sources
 - OpenStreetMap via Overpass: every `historic=*` object with a name, inscription, description or wiki link. (ODbL)
 - Wikipedia geosearch (+ Wikidata links) for notable historic places. (CC BY-SA 4.0)
