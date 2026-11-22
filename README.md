@@ -9,6 +9,8 @@ A phone-friendly web app (PWA). While you travel it watches your location, and w
 4. reads it aloud with the device's built-in voice.
 
 ## Run it
+Deployed automatically to GitHub Pages from `main` (see `.github/workflows/pages.yml`): https://bbrucker50.github.io/Rubbernecker/
+
 It needs HTTPS (location, notifications and install are blocked on plain http), so host the folder on any static host
 (GitHub Pages, Netlify, Cloudflare Pages, Hostinger…) and open the https:// address on your phone, then
 "Add to Home Screen". For a quick desktop try: `python3 -m http.server 8000` and open http://localhost:8000.
